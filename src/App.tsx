@@ -3,14 +3,13 @@ import { CheckCircle2 } from 'lucide-react';
 import { Button } from './components/ui/button';
 import { Input } from './components/ui/input';
 import { Label } from './components/ui/label';
-import { Card } from './components/ui/card';
-import { ImageWithFallback } from './components/figma/ImageWithFallback';
 import { TaskBoard } from './components/TaskBoard';
 import { AccountService } from './lib/services/account';
 
 export default function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [isLogin, setIsLogin] = useState(false);
   const [error, setError] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -23,7 +22,7 @@ export default function App() {
       if (isLogin) {
         await AccountService.login(email, password);
       } else {
-        await AccountService.createAccount(email, password);
+        await AccountService.createAccount(email, password, username);
       }
       // Guardamos el email actual antes de limpiar el formulario
       setUserEmail(email);
@@ -55,10 +54,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen md:h-screen flex items-center justify-center p-4 md:p-6" style={{ background: 'linear-gradient(to bottom right, #000000, #066E8B)' }}>
-      <div className="w-full max-w-6xl md:max-h-[500px] grid grid-cols-1 md:grid-cols-2 gap-0 rounded-2xl overflow-hidden shadow-2xl">
+    <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', background: 'linear-gradient(to bottom right, #000000, #066E8B)', boxSizing: 'border-box' }}>
+      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-0 rounded-2xl overflow-hidden shadow-2xl" style={{ height: '100%', maxHeight: '680px', gridTemplateRows: '1fr' }}>
         {/* Panel izquierdo - Bienvenida */}
-        <div className="relative p-8 md:p-6 flex flex-col justify-center items-start text-white min-h-[300px] md:h-full" style={{ backgroundColor: '#066E8B' }}>
+        <div className="relative p-8 md:p-6 flex flex-col justify-center items-start text-white" style={{ backgroundColor: '#066E8B' }}>
           <div 
             className="absolute inset-0 opacity-40"
             style={{
@@ -68,7 +67,7 @@ export default function App() {
             }}
           />
           
-          <div className="relative z-10 w-full md:absolute md:bottom-0 md:left-0 md:p-6">
+          <div className="relative z-10 w-full" style={{ position: 'absolute', bottom: 0, left: 0, padding: '24px' }}>
             <div className="flex items-center gap-2 mb-4 md:mb-5">
               <CheckCircle2 className="w-8 h-8 md:w-10 md:h-10" />
             </div>
@@ -88,13 +87,28 @@ export default function App() {
         </div>
 
         {/* Panel derecho - Formulario */}
-        <div className="bg-white p-6 md:p-6 flex flex-col justify-center min-h-[400px] md:h-full md:overflow-y-auto">
+        <div className="bg-white p-6 md:p-6 flex flex-col justify-center">
           <div className="w-full max-w-sm mx-auto py-6">
             <h2 className="text-2xl font-bold text-center mb-4 text-gray-900">
               {isLogin ? 'Iniciar Sesión' : 'Registrarse'}
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-3">
+              {!isLogin && (
+                <div className="space-y-1">
+                  <Label htmlFor="username" className="text-gray-700">Nombre de usuario</Label>
+                  <Input
+                    id="username"
+                    type="text"
+                    placeholder="Tu nombre o apodo"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="h-10 bg-gray-50 border-gray-200"
+                    required
+                  />
+                </div>
+              )}
+
               <div className="space-y-1">
                 <Label htmlFor="email" className="text-gray-700">Correo electrónico</Label>
                 <Input

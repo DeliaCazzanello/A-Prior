@@ -8,14 +8,17 @@ export const AccountService = {
      * @param password - The password of the account
      * @returns The data of the account
      */
-  async createAccount(email: string, password: string) {
+  async createAccount(email: string, password: string, username: string) {
     const supabase = createClient();
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (error) {
-      throw error;
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
+
+    if (data.user) {
+      await supabase.from('profiles').upsert({
+        id: data.user.id,
+        email: email.trim().toLowerCase(),
+        username: username.trim(),
+      });
     }
     return data;
   },
