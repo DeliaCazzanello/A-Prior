@@ -2,6 +2,7 @@ import { Task } from '../TaskBoard';
 import React from 'react';
 import { Card } from '../ui/card';
 import { MoreVertical, Edit, Trash2, Calendar } from 'lucide-react';
+import calculatePriorityValue from '../TaskBoard';
 
 interface RenderTaskCardProps {
   calculatePriorityValue: (weight: number, dueDate: string) => number;
@@ -15,7 +16,7 @@ interface RenderTaskCardProps {
   task: Task;
 }
 
-export default function RenderTaskCard({
+export function RenderTaskCard({
   calculatePriorityValue,
   setOpenMenuId,
   openMenuId,
