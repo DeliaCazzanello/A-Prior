@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronUp, Check, XCircle, Mail, Calendar, User } from 'lucide-react';
 import { InvitationService, EnrichedInvitation } from '../lib/services/invitationService';
@@ -8,7 +8,7 @@ interface InvitationPanelProps {
   isOpen: boolean;
   onClose: () => void;
   onAccepted: () => void;
-  anchorRef: React.RefObject<HTMLButtonElement>;
+  anchorRef: RefObject<HTMLButtonElement | null>;
 }
 
 function InvitationCard({

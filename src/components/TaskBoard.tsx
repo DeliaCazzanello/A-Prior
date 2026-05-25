@@ -349,9 +349,10 @@ export function TaskBoard({ onLogout, userEmail }: TaskBoardProps) {
   const handleEditBoard = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingBoard) return;
+    const board = editingBoard;
 
     try {
-      const updated = await BoardService.updateBoard(editingBoard.id, {
+      const updated = await BoardService.updateBoard(board.id, {
         name: newBoard.name,
         description: newBoard.description,
         date: newBoard.date || null
@@ -360,7 +361,7 @@ export function TaskBoard({ onLogout, userEmail }: TaskBoardProps) {
       if (boardEmailsInput.trim()) {
         const emails = boardEmailsInput.split(',').map(em => em.trim().toLowerCase()).filter(Boolean);
         const results = await Promise.allSettled(
-          emails.map(email => InvitationService.sendInvitation(email, editingBoard.id))
+          emails.map(email => InvitationService.sendInvitation(email, board.id))
         );
         const failed = results
           .map((r, i) => r.status === 'rejected' ? emails[i] : null)
@@ -370,7 +371,7 @@ export function TaskBoard({ onLogout, userEmail }: TaskBoardProps) {
         }
       }
 
-      setBoards(boards.map(b => b.id === editingBoard.id ? updated : b));
+      setBoards(boards.map(b => b.id === board.id ? updated : b));
       setEditingBoard(null);
       setNewBoard({ name: '', description: '', date: '' });
       setBoardEmailsInput('');
@@ -529,7 +530,7 @@ export function TaskBoard({ onLogout, userEmail }: TaskBoardProps) {
                     className="flex items-center gap-2 text-white/80 hover:text-white hover:bg-white/10 w-full text-left px-3 py-2 rounded-md transition-colors"
                     onClick={() => {
                       setEditingTask(task);
-                      setNewTask({ ...task });
+                      setNewTask({ ...task, description: task.description ?? '', assignated_to: task.assignated_to ?? [] });
                       setOpenMenuId(null);
                     }}
                   >
@@ -904,7 +905,7 @@ export function TaskBoard({ onLogout, userEmail }: TaskBoardProps) {
                 </div>
                 <div>
                   {/* --- DETECCIÓN DINÁMICA DE TABLERO COLABORATIVO --- */}
-                  {newTask.board_id && boards.find(b => b.id === newTask.board_id)?.team?.length > 0 && (
+                  {newTask.board_id && (boards.find(b => b.id === newTask.board_id)?.team?.length ?? 0) > 0 && (
                     <div className="p-3 bg-cyan-950/40 border border-cyan-500/20 rounded-lg space-y-2">
                       <Label className="text-cyan-400 text-xs font-bold uppercase tracking-wider">Asignar tarea a miembros del equipo:</Label>
                       <select
@@ -1092,7 +1093,7 @@ export function TaskBoard({ onLogout, userEmail }: TaskBoardProps) {
                 </div>
                 <div>
                   {/* --- DETECCIÓN DINÁMICA DE TABLERO COLABORATIVO --- */}
-                  {newTask.board_id && boards.find(b => b.id === newTask.board_id)?.team?.length > 0 && (
+                  {newTask.board_id && (boards.find(b => b.id === newTask.board_id)?.team?.length ?? 0) > 0 && (
                     <div className="p-3 bg-cyan-950/40 border border-cyan-500/20 rounded-lg space-y-2">
                       <Label className="text-cyan-400 text-xs font-bold uppercase tracking-wider">Asignar tarea a miembros del equipo:</Label>
                       <select
@@ -1227,7 +1228,7 @@ export function TaskBoard({ onLogout, userEmail }: TaskBoardProps) {
                   <Button
                     onClick={() => {
                       setEditingTask(selectedTask);
-                      setNewTask({ ...selectedTask });
+                      setNewTask({ ...selectedTask, description: selectedTask.description ?? '', assignated_to: selectedTask.assignated_to ?? [] });
                       setShowTaskModal(false);
                       setSelectedTask(null);
                     }}
